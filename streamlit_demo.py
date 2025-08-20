@@ -1,6 +1,9 @@
 import streamlit as st
 import PyPDF2
+import asyncio
 from langchain.embeddings import OpenAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chat_models import ChatOpenAI
@@ -8,8 +11,9 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains import RetrievalQA
 import os
 
-os.environ['OPENAI_API_KEY'] = ''
-os.environ['GOOGLE_API_KEY'] = ''
+asyncio.set_event_loop(asyncio.new_event_loop())
+#os.environ['OPENAI_API_KEY'] = ''
+os.environ['GOOGLE_API_KEY'] = 'AIzaSyAJKsPX_NTI7c-6B6b2qrjNY8Xwaf1wjjY'
 
 def extract_data_from_pdf(pdf_path):
     with open(pdf_path , 'rb') as file:
@@ -27,7 +31,9 @@ def split_text(text):
 
 #FAISS
 def create_vector_store(docs):
-  embeddings = OpenAIEmbeddings()
+  #embeddings = OpenAIEmbeddings()
+  #embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+  embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
   vectorstore = FAISS.from_documents(docs , embeddings)
   return vectorstore
 
